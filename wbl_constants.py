@@ -74,7 +74,7 @@ PRESETS = {
 PRESET_HELP = {
     "Rauschen beruhigen": "Weißes Rauschen, 32 Segmente ohne Überlappung: Die graue Kurve (ein Periodogramm über alles) streut um ±5,6 dB, die blaue nur um ±0,8 dB.",
     "Resonanz: das Optimum": "Ein Gipfel im Hintergrund, 63 Segmente der Länge 128 mit Hann und 50 % Überlappung: kleinster Gesamtfehler. Der Gipfel liegt im Mittel 1,7 dB zu tief; kürzere Segmente verwischen ihn weiter, längere streuen mehr.",
-    "Zwei Linien: Schärfe geht verloren": "Zwei gleich starke Linien, 1,5 Bins der Segmentlänge auseinander: Das lange Periodogramm (grau) trennt sie, das Welch-Mittel (blau) nicht.",
+    "Zwei Linien: Schärfe geht verloren": "Zwei gleich starke Linien, 1,5 Bins der Segmentlänge auseinander: Das lange Periodogramm (grau) trennt sie in diesem Beispiel, das Welch-Mittel (blau) nicht (bei 1,5 Bins gelingt Letzteres nur in einem Teil der Läufe).",
     "Steiler Hintergrund: Leckage": "Rechteck-Segmente ohne Überlappung bei 57 dB Spannweite: Die Nebenkeulen füllen das Tal um etwa 15 dB. Mit Hann liegt die Schätzung auf der wahren Dichte.",
-    "Schwache Linie": "Eine Linie 20 dB unter dem Rauschen je Abtastwert, 7 Segmente mit Hann: Sie ragt etwa 6 dB über die Rauschdichte. Kürzere Segmente senken ihren Abstand zum Rauschen, weil die Linienleistung je Bin mit der Länge sinkt.",
+    "Schwache Linie": "Eine Linie 20 dB unter dem Rauschen je Abtastwert, 7 Segmente mit Hann: Sie ragt je nach Zufall etwa 5 bis 7 dB über die Rauschdichte (hier 6,5 dB). Kürzere Segmente senken ihren Abstand zum Rauschen, weil die Linienleistung je Bin mit der Länge sinkt.",
 }

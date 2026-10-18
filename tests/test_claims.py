@@ -104,6 +104,34 @@ def test_averaging_helps_finding_a_line_only_a_little_and_too_many_segments_hurt
     assert share[16] < share[8] and r["runs"] >= 500
 
 
+def test_detection_baseline_with_the_rectangle_is_about_sixty_one_percent_and_averaging_gains_only_a_few_points():
+    """README: Die Basis K = 1 ist ein Hann-Periodogramm; ein Rechteck-Periodogramm der ganzen Aufzeichnung findet die Linie in rund 61 % der Läufe (gleicher Aufbau)."""
+    n, runs = C.EXP_N, C.EXP_DET_RUNS
+    noise = ev._white_batch(runs, n, C.SWEEP_SEED + 6)
+    ph = 2.0 * math.pi * ev.G.SplitMix64(C.SWEEP_SEED + 7).uniform(runs)
+    t = np.arange(n)
+    w = W.window("Rechteck", n)
+    est0, _ = H.welch(noise, n, n // 2, w, 1.0)
+    sl = ev._detect_slice(est0.shape[1])
+    thr = float(np.quantile(est0[:, sl].max(axis=1), C.EXP_DET_QUANTILE))
+    x = ev.amplitude(-20) * np.cos(2.0 * np.pi * ((n // 4 + 0.37) / n) * t[None, :] + ph[:, None]) + noise
+    est, _ = H.welch(x, n, n // 2, w, 1.0)
+    rect_share = float((est[:, sl].max(axis=1) > thr).mean())
+    assert 100 * rect_share == pytest.approx(61, abs=2)
+    share = dict(zip([x for x in ev.sweep_detect() if x["snr"] == -20][0]["k"], [x for x in ev.sweep_detect() if x["snr"] == -20][0]["share"]))
+    assert max(share.values()) - rect_share < 0.10 and share[1] < rect_share - 0.08
+
+
+def test_smoothing_with_steep_background_welch_beats_the_smoothed_rectangle_periodogram():
+    """README: bei hoher Dynamik (Steil) Welch 1,08 / 0,88 / 1,18 dB gegen 2,37 / 2,29 / 2,41 dB beim geglätteten Rechteck-Periodogramm."""
+    rows = ev.sweep_smoothing(background="Steil")
+    welch = [rows[i]["rmse_db"] for i in (0, 3, 6)]
+    rect = [rows[i]["rmse_db"] for i in (1, 4, 7)]
+    assert [round(v, 2) for v in welch] == pytest.approx([1.08, 0.88, 1.18], abs=0.03)
+    assert [round(v, 2) for v in rect] == pytest.approx([2.37, 2.29, 2.41], abs=0.03)
+    assert all(r > 1.9 * w for r, w in zip(rect[:2], welch[:2]))
+
+
 # --- README: die Zahlen der Befunde-Tabelle stehen im Text und stimmen mit den Messungen überein --------------------------------------------------
 
 

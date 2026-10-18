@@ -364,7 +364,7 @@ def verdict_overlap(rows: list[dict]) -> tuple[str, str]:
     h75 = _overlap_row(rows, "Hann", 0.75)
     return "info", (f"Mit 50 % Überlappung liefert Hann {de(hann['k_eff'], 1)} unabhängige Mittel (Faktor {de(hann['gain'], 2)} gegen ohne Überlappung), das Rechteck nur "
                     f"{de(rect['k_eff'], 1)} (Faktor {de(rect['gain'], 2)}); mehr als 62,5 % bringt bei Hann nichts mehr (75 %: {de(h75['k_eff'], 1)}). "
-                    "**Überlappung holt nur zurück, was das Fenster an den Rändern verschenkt.**")
+                    "**Überlappung holt zurück, was das Fenster an den Rändern verschenkt** (beim Rechteck gewinnt sie trotzdem).")
 
 
 def verdict_tradeoff(rows: list[dict]) -> tuple[str, str]:
@@ -379,7 +379,7 @@ def verdict_tradeoff(rows: list[dict]) -> tuple[str, str]:
 def verdict_two_lines(rows: list[dict]) -> tuple[str, str]:
     r = [x for x in rows if x["delta"] == 4.0][0]
     return "info", (f"Zwei Linien im Abstand von 4 Bins der Länge 256 erscheinen bei Segmentlänge 256 in {de(100 * r[256], 0)} % der Läufe als zwei Gipfel, bei 128 "
-                    f"(2 Bins) in {de(100 * r[128], 0)} %, bei 64 (1 Bin) in {de(100 * r[64], 0)} %: **ab etwa 2,5 Bins der Segmentlänge zuverlässig getrennt, darunter nicht.**")
+                    f"(2 Bins) in {de(100 * r[128], 0)} %, bei 64 (1 Bin) in {de(100 * r[64], 0)} %: **ab etwa 2,5 Bins der Segmentlänge zuverlässig getrennt, darunter fällt die Auflösung stufenlos ab.**")
 
 
 def verdict_leakage(rows: list[dict]) -> tuple[str, str]:
@@ -392,7 +392,7 @@ def verdict_smoothing(rows: list[dict]) -> tuple[str, str]:
     w, rect, hann = rows[0], rows[1], rows[2]
     return "info", (f"Bei gleicher Streuung ({de(w['std_db'], 2)} dB) hat das mit Rechteck geglättete lange Periodogramm fast denselben Gipfelfehler ({de(rect['peak_db'], 1)} statt "
                     f"{de(w['peak_db'], 1)} dB); mit Hann braucht es {de(hann['bandwidth_hz'] / w['bandwidth_hz'], 1)}-fach so viel Bandbreite ({de(hann['peak_db'], 1)} dB). "
-                    "**Welch ist eine Glättung**, kein eigenes Prinzip.")
+                    "**Bei mäßiger Dynamik ist Welch kaum besser als ein geglättetes Periodogramm**; bei hoher Dynamik (Steil) schon, weil das Rechteck leckt.")
 
 
 def verdict_detect(rows: list[dict]) -> tuple[str, str]:
@@ -400,5 +400,5 @@ def verdict_detect(rows: list[dict]) -> tuple[str, str]:
     sh = dict(zip(r["k"], r["share"]))
     best_k = max(sh, key=sh.get)
     return "warning", (f"Bei −20 dB je Abtastwert wird die Linie mit einem Periodogramm in {de(100 * sh[r['k'][0]], 0)} % der Läufe gefunden, mit {best_k} Segmenten in "
-                       f"{de(100 * sh[best_k], 0)} %, mit {r['k'][-1]} Segmenten nur in {de(100 * sh[r['k'][-1]], 0)} %: **Mitteln hilft beim Finden einer Linie wenig, "
-                       "und zu viele Segmente schaden.**")
+                       f"{de(100 * sh[best_k], 0)} %, mit {r['k'][-1]} Segmenten nur in {de(100 * sh[r['k'][-1]], 0)} %: **Mitteln hilft beim Finden einer Linie wenig "
+                       "(gegen ein Rechteck-Periodogramm der ganzen Aufzeichnung höchstens einige Prozentpunkte), und zu viele Segmente schaden.**")

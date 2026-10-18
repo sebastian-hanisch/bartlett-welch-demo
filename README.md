@@ -11,7 +11,7 @@ Streuung, Auflösung, Leckage und die Wirkung der Überlappung werden gegen die 
 
 ## Warum dieses Problem
 
-Ein einzelnes Periodogramm streut so stark wie sein Wert, egal wie lang die Aufzeichnung ist (Variationskoeffizient 1 je Bin). Mitteln über Segmente beruhigt die Kurve, aber jedes Segment
+Ein einzelnes Periodogramm streut so stark wie sein Wert, egal wie lang die Aufzeichnung ist (Variationskoeffizient 1 je innerem Bin bei weißem Gauß-Rauschen). Mitteln über Segmente beruhigt die Kurve, aber jedes Segment
 ist kürzer und löst weniger fein auf. Das Verfahren tauscht Schärfe gegen Ruhe; wie günstig der Tausch ist, hängt vom Fenster je Segment und von der Überlappung ab.
 
 ## Modell
@@ -35,10 +35,10 @@ Alle Zahlen stehen in `tests/test_claims.py` und `tests/test_experiments_golden.
 | Deckt das 95-%-Band mit ν = 2·K? | In 94,4 bis 95,1 % der Fälle (K = 1 bis 64). |
 | Was bringt die Überlappung (Länge 256, n = 4096; ohne Überlappung 16 unabhängige Mittel)? | Hann: 50 % → 29,8 (Faktor 1,86), 62,5 % → 32,4, 75 % → 32,4; Rechteck: 50 % → 21,0 (Faktor 1,31), 75 % → 22,7; Blackman 75 % → 37,6. Die Formel trifft auf 2 %. |
 | Gibt es ein Optimum (Resonanz, Hann 50 %, n = 4096)? | Gesamtfehler in dB bei Länge 32 / 64 / **128** / 256 / 512 / 1024 / 4096: 1,98 / 1,04 / **0,64** / 0,82 / 1,18 / 1,77 / 6,11. Der gemittelte Gipfel liegt bei Länge 128 um 1,7 dB, bei 32 um 5,7 dB zu tief. |
-| Wie dicht dürfen zwei gleich starke Linien liegen (10 dB je Linie, Hann 50 %, n = 2048)? | Aufgelöst ab etwa 2,5 Bins der Segmentlänge: 1,5 Bins in 28 % der Läufe, 2,5 Bins in 100 %; bei 2 Bins 79 %, bei 1 Bin 0 %. |
+| Wie dicht dürfen zwei gleich starke Linien liegen (10 dB je Linie, Hann 50 %, n = 2048)? | Zuverlässig (100 %) getrennt ab etwa 2,5 Bins der Segmentlänge; darunter fällt die Auflösung stufenlos ab: 1,5 Bins in 28 % der Läufe, 2,5 Bins in 100 %; bei 2 Bins 79 %, bei 1 Bin 0 % (die Werte gehören zu verschiedenen Segmentlängen: 256 für 1,5 und 2,5 Bins, 128 für 2 Bins, 64 für 1 Bin). |
 | Wie stark füllt sich das Tal bei 57 dB Spannweite (Länge 256)? | Bartlett mit Rechteck-Segmenten um 14,6 dB, Welch mit Hann (50 %) und Hann ohne Überlappung um 0,0 dB; das über 16 oder 29 Bins geglättete Rechteck-Periodogramm der ganzen Aufzeichnung um 4,2 bis 4,3 dB. |
-| Ist Welch eine eigene Methode? | Nein, eine Glättung: Bei gleicher exakter Streuung (K<sub>eff</sub> 60 / 29 / 14) hat das über m Bins geglättete Rechteck-Periodogramm denselben Gesamtfehler (0,66 / 0,82 / 1,18 dB gegen 0,66 / 0,81 / 1,17); das Hann-Periodogramm braucht 2,4-fache Bandbreite und liegt am Gipfel 3,7 dB statt 1,7 dB tief. |
-| Hilft das Mitteln beim Finden einer Linie (−20 dB je Abtastwert, 99-%-Schwelle)? | Anteil gefunden bei K = 1 / 2 / 4 / 8 / 16 / 32: 50 / 69 / 64 / 64 / 47 / 27 %. Ein flaches Optimum bei wenigen Segmenten, ab 16 schadet es. |
+| Ist Welch eine eigene Methode? | Bei mäßiger Dynamik (Hintergrund „Resonanz“) kaum mehr als eine Glättung: Bei gleicher Streuung (K<sub>eff</sub> 60 / 29 / 14) hat das über m Bins geglättete Rechteck-Periodogramm fast denselben Gesamtfehler (0,66 / 0,82 / 1,18 dB gegen 0,66 / 0,81 / 1,17); das Hann-Periodogramm braucht 2,4-fache Bandbreite und liegt am Gipfel 3,7 dB statt 1,7 dB tief. Bei hoher Dynamik (Hintergrund „Steil“) nicht: Welch 1,08 / 0,88 / 1,18 dB, das geglättete Rechteck-Periodogramm 2,37 / 2,29 / 2,41 dB (Leckage im Tal). |
+| Hilft das Mitteln beim Finden einer Linie (−20 dB je Abtastwert, 99-%-Schwelle)? | Anteil gefunden bei K = 1 / 2 / 4 / 8 / 16 / 32: 50 / 69 / 64 / 64 / 47 / 27 %. Ein flaches Optimum bei wenigen Segmenten (die Reihenfolge von K = 2 / 4 / 8 liegt im Rauschen); K = 16 liegt gegenüber K = 1 im Rauschen, K = 32 deutlich darunter. Die Basis K = 1 ist ein Hann-Periodogramm, das die Ränder wegwirft: Ein Rechteck-Periodogramm der ganzen Aufzeichnung findet die Linie in rund 61 % der Läufe, Mitteln bringt dagegen höchstens einige Prozentpunkte. |
 
 ## Ehrliche Grenzen
 
@@ -53,11 +53,11 @@ Alle Zahlen stehen in `tests/test_claims.py` und `tests/test_experiments_golden.
 
 - **Kern gegen Handrechnung:** Hann der Länge 4 mit Schrittweite 2 und 8 Messwerten: ρ₁ = 1/36, K = 3, K<sub>eff</sub> = 2,893; Bartlett K = 2: K<sub>eff</sub> = 2; Welch einer Konstanten
   (2,667 / 0,667 / 0); Log-Bias bei K = 2: −1,174 dB.
-- **Orakel (`tests/test_oracle_welch.py`):** Welch gegen `scipy.signal.welch` (alle Fenster, Überlappungen, gerade und ungerade Längen); Digamma, Trigamma, χ²-Quantile gegen `scipy`;
+- **Orakel (`tests/test_oracle_welch.py`):** Welch gegen `scipy.signal.welch` (alle vier Fenster, Überlappungen 0 / 50 / 75 %, gerade und ungerade Aufzeichnungslängen); Digamma, Trigamma, χ²-Quantile gegen `scipy`;
   Streufaktor gegen die exakte quadratische Form (2·tr(Q²)) und gegen eine große Simulation; Erwartungswert (Rauschen und Linien) gegen Simulation; Gipfelzählung gegen `scipy.signal.find_peaks`.
 - **Generator** (`tests/test_generator.py`): wortgleich aus der ersten Demo.
 - **Zahlen:** jede Zahl dieser README in `tests/test_claims.py`; Festwerte der Experimente in `tests/test_experiments_golden.py`; Verdikte in `tests/test_verdicts.py`.
-- **Oberfläche:** AppTest-Rauchtest (jeder Button, jeder Regler an den Grenzen), alle Fenster und Hintergründe, Permalink, Segmentlänge gegen Länge, Footer.
+- **Oberfläche:** AppTest-Rauchtest (jeder Button, jeder `st.slider` an den Grenzen; die Auswahlregler nur in Einzeltests), alle Fenster und Hintergründe, Permalink, Segmentlänge gegen Länge, Footer.
 
 ## Dateistruktur
 

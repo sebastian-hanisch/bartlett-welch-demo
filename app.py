@@ -51,7 +51,7 @@ def _experiments():
 st.title("📊 Bartlett und Welch: Mitteln beruhigt das Spektrum, kostet aber Schärfe")
 st.markdown(
     """
-Ein einzelnes **Periodogramm** streut so stark wie sein Wert (Demo 1). Wer die Aufzeichnung in **Segmente** schneidet, jedes für sich in ein Spektrum verwandelt und die Spektren
+Ein einzelnes **Periodogramm** streut bei weißem Gauß-Rauschen an inneren Bins so stark wie sein Wert (Demo 1). Wer die Aufzeichnung in **Segmente** schneidet, jedes für sich in ein Spektrum verwandelt und die Spektren
 **mittelt**, beruhigt die Kurve: Die Streuung sinkt mit der Zahl der Segmente. Der Preis: Jedes Segment ist kürzer, die **Frequenzauflösung** wird im gleichen Maß gröber, Gipfel
 verwischen, Täler füllen sich. **Bartlett** schneidet ohne Überlappung mit Rechteck; **Welch** überlappt die Segmente und gewichtet sie mit einem Fenster.
 
@@ -68,7 +68,7 @@ with st.expander("So funktioniert das Mitteln", expanded=True):
 3. **Mitteln:** Die K Periodogramme werden Bin für Bin gemittelt. Sind sie unabhängig, sinkt die Streuung auf 1/√K des Werts.
 4. **Überlappung:** Überlappte Segmente sind nicht unabhängig; das Fenster dämpft die Ränder, die der Nachbar dafür noch nutzt. Die **äquivalente Zahl unabhängiger Mittel** K<sub>eff</sub>
    steht zwischen K ohne Überlappung und K.
-5. **Auflösung:** Das Fenster der Länge L hat eine Hauptkeule von rund 1,5 Bins · f<sub>s</sub>/L Breite: Zwei Linien, die dichter als etwa 2,5 Bins der Segmentlänge liegen, verschmelzen.
+5. **Auflösung:** Das Fenster der Länge L hat eine Hauptkeule von rund 1,5 Bins · f<sub>s</sub>/L Breite: Zwei Linien werden ab etwa 2,5 Bins der Segmentlänge zuverlässig getrennt; darunter fällt der Anteil der Läufe, in denen sie getrennt erscheinen, stufenlos ab.
         """,
         unsafe_allow_html=True,
     )
@@ -242,7 +242,7 @@ st.markdown(
 | **Zwei Linien, kein Trend** | Mehr Linien und ein Trend sind nicht untersucht; ein Trend leckt in alle Segmente. | Unterraumverfahren |
 | **Arithmetisches Mittel** | Ein Ausreißer in einem Segment verzerrt das Mittel; ein Median-Mittel ist robuster, hier nicht behandelt. | – |
 | **Segmentlänge Zweierpotenz, ganze Segmente** | Bleiben Messwerte am Ende übrig, werden sie nicht genutzt. | – |
-| **Auflösung gegen Streuung** | Es gibt kein Verfahren, das beides zugleich verbessert; Multitaper nutzt die ganze Aufzeichnung geschickter. | Multitaper |
+| **Auflösung gegen Streuung** | Bei fester Aufzeichnungslänge verbessert Mitteln die Streuung nur auf Kosten der Auflösung; ein günstigerer Kompromiss braucht ein besseres Verfahren (Multitaper) oder zusätzliche Annahmen (parametrische Modelle). | Multitaper |
 """,
     unsafe_allow_html=True,
 )
